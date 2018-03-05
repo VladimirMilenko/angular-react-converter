@@ -62,5 +62,5 @@ typings/
 build/
 
 # IDEs
-.idea/
-.vscode/
+.idea
+.vscode
