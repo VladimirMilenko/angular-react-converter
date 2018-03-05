@@ -60,3 +60,7 @@ typings/
 # Build folder
 
 build/
+
+# IDEs
+.idea/
+.vscode/
