@@ -11,7 +11,7 @@ import { transformFromAst } from 'babel-core';
 import {resolverRegistry} from "./helpers";
 import { angularGenerator } from './converters/generators/AngularBootstrap';
 import { blockStatement, forStatement, classDeclaration, classBody, classMethod, identifier, returnStatement, callExpression, memberExpression, thisExpression, arrowFunctionExpression, binaryExpression, numericLiteral, file, program } from 'babel-types';
-const code = fs.readFileSync(path.resolve(__dirname, '../react-test/ClassComponent.js'));
+const code = fs.readFileSync(path.resolve(__dirname, './react-test/ClassComponent.js'));
 const builder = new AbstractComponentCreator(code.toString());
 const node = builder.convertToAbstractTree();
 

@@ -38,7 +38,7 @@ export class AngularComponentGenerator {
                 [
                   b.objectExpression( [
                     b.objectProperty(b.identifier('selector'),b.stringLiteral('my-component'),false,false,[]),
-                    b.objectProperty(b.identifier('template-url'),b.stringLiteral('./my-component.component.html'),false,false,[]),
+                    b.objectProperty(b.identifier('templateUrl'),b.stringLiteral('./my-component.component.html'),false,false,[]),
                     ]
                   )
                 ]
