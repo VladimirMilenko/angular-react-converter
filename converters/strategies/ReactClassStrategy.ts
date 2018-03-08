@@ -1,15 +1,9 @@
 import { Strategy } from "./IStrategy";
 import {
-  File, JSXIdentifier, ClassDeclaration, Statement, MemberExpression, Identifier, ClassMethod, ReturnStatement, JSXElement,
-  JSXAttribute,
-  JSXExpressionContainer,
-  JSXText,
+  File, ClassDeclaration, Statement, MemberExpression, Identifier, ClassMethod, ReturnStatement,
 } from 'babel-types';
 import { parse } from 'babylon';
-import * as types from 'ast-types';
-import * as escope from 'escope';
-import { AbstractComponentCreator } from "../AbstractComponentCreator";
-import { AttributeNode, RenderNode, TextNode } from "../../declarations";
+import traverse from 'babel-traverse';
 import { ParserPredicate } from '../predicates/predicate';
 import {resolverRegistry} from '../../helpers';
 
@@ -20,30 +14,19 @@ export class ReactClassStrategy implements Strategy {
   predicates: Array<ParserPredicate>;
   code: string;
   ast: File;
+  props: any;
   constructor(code: string, predicates: Array<ParserPredicate>) {
     this.code = code;
 
     this.predicates = predicates;
     this.ast = parse(this.code, {
       sourceType: 'module',
-      ranges: false,
       plugins: [
         'jsx'
       ]
     });
-    let scopeManager = escope.analyze(this.ast, {
-      ecmaVersion: 6,
-      sourceType: 'module'
-    });
-    let currentScope = scopeManager.acquire(this.ast);
     resolverRegistry.setAst(this.ast);
-    types.visit(this.ast, {
-      visitExpression: function(path) {
-        this.traverse(path);
-      }
-    })
-
-  }
+    }
 
   get reactComponentClass(): ClassDeclaration {
     return this.ast.program.body.find(token => {

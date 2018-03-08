@@ -1,7 +1,7 @@
 import React from 'react';
 class MyComponent extends React.Component {
     render() {
-        const a = this.props;
+        const {a} = this.props;
         return (<div className="asd">
             <h1>Title</h1>
             {

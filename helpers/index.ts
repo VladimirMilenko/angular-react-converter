@@ -5,14 +5,15 @@ import { JSXMapOutput } from "../converters/predicates/react/JSXMapOutput";
 import { JSXExpressionMap } from "../converters/predicates/react/JSXExpressionMap";
 import { JSXExpressionIdentifier } from "../converters/predicates/react/JSXExpressionIdentifier";
 import { JSXChildrenIdentifier } from "../converters/predicates/react/JSXChildrenIdentifier";
+import * as uuidv1 from 'uuid';
 
 interface ArrayConstructor {
     from<T, U>(arrayLike: ArrayLike<T>, mapfn: (v: T, k: number) => U, thisArg?: any): Array<U>;
     from<T>(arrayLike: ArrayLike<T>): Array<T>;
 }
 
-function isUpperCase(aCharacter:string):boolean    
-{    
+function isUpperCase(aCharacter:string):boolean
+{
     return (aCharacter >= 'A') && (aCharacter <= 'Z');
 }
 
@@ -28,10 +29,15 @@ export const convertComponentName = (name:string) => {
 }
 
 
-
+interface Variable {
+  type: "Local" | "Input",
+  name: string
+}
 class ResolversRegistry {
     resolvers: Array<ParserPredicate>;
     ast:any;
+    vars: Map<string, Variable> = new Map<string, Variable>();
+
     constructor() {
         this.resolvers = [
             new JSXTextPredicate(),
@@ -42,11 +48,27 @@ class ResolversRegistry {
             new JSXChildrenIdentifier(),
         ];
     }
+    registerVariable(variableName:string, variableType: "Local" | "Input"):string {
+      let existingKey = null;
+      this.vars.forEach((value, key)=> {
+        if(value.name === variableName && value.type === variableType) {
+          existingKey = key;
+        }
+      });
+      if(existingKey) return existingKey;
 
+      const id = uuidv1.v4();
+
+      this.vars.set(id, {
+        name:variableName,
+        type: variableType
+      });
+      return id;
+    }
     addResolver(resolver:ParserPredicate) {
         this.resolvers.push(resolver);
     }
-    setAst(ast) {
+    setAst(ast:any) {
         this.ast = ast;
     }
     resolve(input:any) {
