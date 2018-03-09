@@ -1,9 +1,8 @@
 import {resolverRegistry, Variable} from "../../helpers";
 import generator from 'babel-generator';
 import * as b from 'babel-types';
-import {classProperty, identifier, typeAnnotation} from "babel-types";
 
-const inputDecorator = b.decorator(b.identifier('Input'));
+const inputDecorator = b.decorator(b.callExpression(b.identifier('Input'), []));
 
 const extend = (a:any,b:any) => Object.assign(a,b);
 
@@ -50,7 +49,7 @@ export class AngularComponentGenerator {
                 undefined,
                 undefined,
                 [
-                  b.decorator(b.identifier('Input'))
+                  inputDecorator
                 ]
               )
             );
