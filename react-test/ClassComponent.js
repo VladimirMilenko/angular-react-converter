@@ -5,9 +5,6 @@ class MyComponent extends React.Component {
         const {b} = this.props;
         return (<div className="asd">
             <h1>Title</h1>
-            {
-                a
-            }
       {
         b
       }

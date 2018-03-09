@@ -9,7 +9,11 @@ import {
 } from "babel-types";
 import traverse from "babel-traverse";
 
-export const resolveVariable = (token:any, identifier:string) => {
+export interface VariableOptions  {
+  mutations?: Array<any>
+}
+
+export const resolveVariable = (token:any, identifier:string, options?: VariableOptions) => {
   let newIdentifier = identifier;
   traverse(resolverRegistry.ast, {
     enter: (path) => {
@@ -20,7 +24,7 @@ export const resolveVariable = (token:any, identifier:string) => {
         if (isObjectPattern(declaratorNode.id) && isMemberExpression(declaratorNode.init)) {
           const init = declaratorNode.init as MemberExpression;
           if (isThisExpression(init.object) && isIdentifier(init.property)) {
-            newIdentifier = resolverRegistry.registerVariable(identifier, init.property.name === 'props' ? 'Input' : 'Local');
+            newIdentifier = resolverRegistry.registerVariable(identifier, init.property.name === 'props' ? 'Input' : 'Local', options);
           }
         }
       }

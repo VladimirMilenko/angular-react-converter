@@ -6,6 +6,8 @@ import { JSXExpressionMap } from "../converters/predicates/react/JSXExpressionMa
 import { JSXExpressionIdentifier } from "../converters/predicates/react/JSXExpressionIdentifier";
 import { JSXChildrenIdentifier } from "../converters/predicates/react/JSXChildrenIdentifier";
 import * as uuidv1 from 'uuid';
+import * as equal from 'deep-equal';
+import { VariableOptions } from "converters/predicates/react/InputPropsResolver";
 
 interface ArrayConstructor {
     from<T, U>(arrayLike: ArrayLike<T>, mapfn: (v: T, k: number) => U, thisArg?: any): Array<U>;
@@ -29,9 +31,10 @@ export const convertComponentName = (name:string) => {
 }
 
 
-interface Variable {
+export interface Variable {
   type: "Local" | "Input",
-  name: string
+  name: string,
+  options?: VariableOptions
 }
 class ResolversRegistry {
     resolvers: Array<ParserPredicate>;
@@ -48,10 +51,10 @@ class ResolversRegistry {
             new JSXChildrenIdentifier(),
         ];
     }
-    registerVariable(variableName:string, variableType: "Local" | "Input"):string {
+    registerVariable(variableName:string, variableType: "Local" | "Input", options?: VariableOptions):string {
       let existingKey = null;
       this.vars.forEach((value, key)=> {
-        if(value.name === variableName && value.type === variableType) {
+        if(value.name === variableName && value.type === variableType && equal(value.options, options)) {
           existingKey = key;
         }
       });
@@ -61,7 +64,8 @@ class ResolversRegistry {
 
       this.vars.set(id, {
         name:variableName,
-        type: variableType
+        type: variableType,
+        options: options || {}
       });
       return id;
     }

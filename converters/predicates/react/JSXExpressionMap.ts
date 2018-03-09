@@ -27,7 +27,7 @@ export class JSXExpressionMap implements ParserPredicate {
     const renderOutput = resolverRegistry.resolve(arrowExpression.body);
 
     let baseItem = this.getBaseObjectName(callee);
-    let newBaseItem = resolveVariable(token, baseItem);
+    let newBaseItem = resolveVariable(token, baseItem, {mutations:this.getMutations(callee)});
     return {
       type: 'ForLoop',
       baseItem: {

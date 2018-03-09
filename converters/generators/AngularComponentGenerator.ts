@@ -1,6 +1,37 @@
-import {resolverRegistry} from "../../helpers";
+import {resolverRegistry, Variable} from "../../helpers";
 import generator from 'babel-generator';
 import * as b from 'babel-types';
+import {classProperty, identifier, typeAnnotation} from "babel-types";
+
+const inputDecorator = b.decorator(b.identifier('Input'));
+
+const extend = (a:any,b:any) => Object.assign(a,b);
+
+
+const generateMutatableVariable = (variable:Variable):Array<any> => {
+    if(!variable.options || !variable.options.mutations) return [];
+    return [
+      extend(b.classProperty(b.identifier('_'+variable.name), undefined), {
+        accessibility: 'private'
+      }),
+      extend(b.classMethod('set', b.identifier(variable.name), [b.identifier(variable.name)],
+          b.blockStatement([
+            b.expressionStatement(b.assignmentExpression(
+              '=',
+              b.memberExpression(
+                b.thisExpression(), b.identifier('_'+variable.name)
+              ),
+              variable.options.mutations[0].object
+            ))
+          ]),false,
+        ), {
+        decorators: [inputDecorator]
+      }),
+      b.classMethod('get', b.identifier(variable.name), [], b.blockStatement([
+        b.returnStatement(b.memberExpression(b.thisExpression(), b.identifier('_'+variable.name)))
+      ]),false)
+    ];
+};
 
 export class AngularComponentGenerator {
   generateInputProps():Array<any> {
@@ -8,16 +39,22 @@ export class AngularComponentGenerator {
     resolverRegistry.vars.forEach((value, key, map1) => {
       switch (value.type) {
         case 'Input':
-          declarations.push(
-            b.classProperty(
-              b.identifier(value.name),
-              undefined,
-              undefined,
-              [
-                b.decorator(b.identifier('Input'))
-              ]
+          if(value.options && value.options.mutations) {
+            declarations.push(
+              ...generateMutatableVariable(value)
             )
-          );
+          } else {
+            declarations.push(
+              b.classProperty(
+                b.identifier(value.name),
+                undefined,
+                undefined,
+                [
+                  b.decorator(b.identifier('Input'))
+                ]
+              )
+            );
+          }
       }
     });
     return declarations;
