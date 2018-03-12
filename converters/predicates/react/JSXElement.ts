@@ -1,7 +1,8 @@
 import { ParserPredicate } from "../predicate";
-import { isJSXText, JSXText, isJSXElement, JSXElement, JSXIdentifier, JSXAttribute } from "babel-types";
+import {isJSXText, JSXText, isJSXElement, JSXElement, JSXIdentifier, JSXAttribute, isIdentifier} from "babel-types";
 import { resolverRegistry } from "../../../helpers";
 import { AbstractComponentCreator } from "../../AbstractComponentCreator";
+import {resolveVariable} from "./InputPropsResolver";
 
 export class JSXElementPredicate implements ParserPredicate {
     matchingType = "JSXElement";
@@ -15,7 +16,7 @@ export class JSXElementPredicate implements ParserPredicate {
         const attributes = token.openingElement.attributes.map(x => {
           return this.parseAttribute(x);
         });
-    
+
         const resultNode = AbstractComponentCreator.createRenderNode(
           name,
           [],
@@ -43,6 +44,9 @@ export class JSXElementPredicate implements ParserPredicate {
             }
           }
           case 'JSXExpressionContainer': {
+              if(isIdentifier(attribute.value.expression)) {
+                resolveVariable(attribute,attribute.value.expression.name);
+              }
               return {
                   name: attribute.name.name,
                   value: attribute.value.expression,
