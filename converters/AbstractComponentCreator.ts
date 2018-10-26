@@ -10,7 +10,7 @@ export class AbstractComponentCreator {
     constructor(code:string) {
         this.strategy = new ReactClassStrategy(code, [new JSXExpressionMap()]);
     }
-    convertToAbstractTree():RenderNode {
+    convertToAbstractTree(): { node: RenderNode, name: string } {
         console.log(`Starting convertation using ${this.strategy.name}`);
         return this.strategy.convert();
     }

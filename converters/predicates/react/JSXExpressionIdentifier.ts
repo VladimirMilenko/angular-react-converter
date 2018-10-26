@@ -7,7 +7,7 @@ export class JSXExpressionIdentifier implements ParserPredicate {
     matchingType = 'JSXExpressionContainer';
     parse(token: JSXExpressionContainer): any {
         const expression = token.expression as Identifier;
-        const baseObject = resolveVariable(token,expression.name);
+        const baseObject = resolveVariable(expression.name);
         return {
             type: 'RenderIdentifier',
             value: {

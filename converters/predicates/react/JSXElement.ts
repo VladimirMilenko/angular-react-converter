@@ -1,5 +1,5 @@
 import { ParserPredicate } from "../predicate";
-import {isJSXText, JSXText, isJSXElement, JSXElement, JSXIdentifier, JSXAttribute, isIdentifier} from "babel-types";
+import {isJSXText, JSXText, isJSXElement, JSXElement, JSXIdentifier, JSXAttribute, isIdentifier, isMemberExpression} from "babel-types";
 import { resolverRegistry } from "../../../helpers";
 import { AbstractComponentCreator } from "../../AbstractComponentCreator";
 import {resolveVariable} from "./InputPropsResolver";
@@ -45,11 +45,23 @@ export class JSXElementPredicate implements ParserPredicate {
           }
           case 'JSXExpressionContainer': {
               if(isIdentifier(attribute.value.expression)) {
-                resolveVariable(attribute,attribute.value.expression.name);
+                resolveVariable(attribute.value.expression.name);
+              }
+              if(isMemberExpression(attribute.value.expression)) {
+                return {
+                  name: attribute.name.name,
+                  value: {
+                    type: 'MemberExpression',
+                    value: attribute.value.expression,
+                  }
+                }
               }
               return {
                   name: attribute.name.name,
-                  value: attribute.value.expression,
+                  value: {
+                    type: 'Identifier',
+                    value: attribute.value.expression.name,
+                  }
               }
           }
         }

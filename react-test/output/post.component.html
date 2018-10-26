@@ -1,0 +1,27 @@
+<article class="post">
+  <ng-container *ngIf="postLoading; then tmpl_PostLoading; else tmpl_NotPostLoading"></ng-container>
+  <ng-template #tmpl_PostLoading>
+    <div class="post__photo">
+      <div>Loading</div>
+    </div>
+  </ng-template>
+  <ng-template #tmpl_NotPostLoading>
+    <div class="post__photo">
+      <img class="post__img" [src]="post.images.standard_resolution.url">
+    </div>
+  </ng-template>
+  <div class="post__content">
+    <ng-container *ngIf="commentsLoading; then tmpl_CommentsLoading; else tmpl_NotCommentsLoading"></ng-container>
+    <ng-template #tmpl_CommentsLoading>
+      <div>Loading</div>
+    </ng-template>
+    <ng-template #tmpl_NotCommentsLoading>
+      <div>
+        <profile [profile_picture]="post.user.profile_picture" [username]="post.user.username"></profile>
+        <div class="comments">
+          <comment *ngFor="let comment of comments" [text]="comment.text" [from]="comment.from.username"></comment>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</article>
